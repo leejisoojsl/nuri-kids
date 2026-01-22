@@ -1,22 +1,12 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime, timedelta
-from streamlit_gsheets import GSheetsConnection
+from st_gsheets_connection import GSheetsConnection  # 수정됨
 
-# 1. 페이지 설정 및 모바일 최적화 CSS
+# 1. 페이지 설정 및 디자인
 st.set_page_config(page_title="누리키즈 챌린지", page_icon="🎨", layout="centered")
 
-st.markdown("""
-    <style>
-    .main { background-color: #FFF9E1; }
-    .stTabs [data-baseweb="tab-list"] { gap: 10px; }
-    .stTabs [data-baseweb="tab"] { height: 50px; background-color: #f0f2f6; border-radius: 10px; padding: 10px; }
-    .stCheckbox { transform: scale(1.5); margin-top: 10px; }
-    div[data-testid="stMetricValue"] { font-size: 1.5rem; color: #FF6B6B; }
-    </style>
-    """, unsafe_allow_html=True)
-
-# 2. 구글 시트 연결 설정 (따옴표 추가 완료)
+# 2. 구글 시트 연결 설정 (반드시 따옴표 포함!)
 SHEET_URL = "https://docs.google.com/spreadsheets/d/1CQtgnJKueyfaJs3rUrbtPc8pOCGRtPq9a6BX1Nsok3Y/edit"
 conn = st.connection("gsheets", type=GSheetsConnection)
 
@@ -62,27 +52,19 @@ st.divider()
 # 6. 데이터 저장 로직
 if st.button("🎈 오늘의 학습 완료 도장 쾅!", use_container_width=True):
     try:
-        # 기존 데이터 불러오기
         existing_data = conn.read(spreadsheet=SHEET_URL)
-        
-        # 새 데이터 생성
         new_row = pd.DataFrame([{
             "날짜": today.strftime("%Y-%m-%d"),
             "이름": user_name,
             "학습체크": sum(checks_study),
             "한글완성": sum(checks_hangeul)
         }])
-        
-        # 데이터 합치기
         updated_df = pd.concat([existing_data, new_row], ignore_index=True)
-        
-        # 구글 시트 업데이트
         conn.update(spreadsheet=SHEET_URL, data=updated_df)
-        
         st.balloons()
-        st.success(f"🎉 {user_name} 어린이, 오늘 기록이 저장되었습니다!")
+        st.success(f"🎉 {user_name} 어린이, 저장 완료!")
     except Exception as e:
-        st.error(f"저장 중 오류가 발생했습니다: {e}")
+        st.error(f"저장 중 오류 발생: {e}")
 
 # 7. 관리자 모드
 if is_admin:
@@ -91,4 +73,4 @@ if is_admin:
         admin_df = conn.read(spreadsheet=SHEET_URL)
         st.dataframe(admin_df, use_container_width=True)
     except:
-        st.write("데이터를 불러올 수 없습니다. 시트 공유 설정을 확인해주세요.")
+        st.write("데이터를 불러올 수 없습니다.")
