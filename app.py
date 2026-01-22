@@ -18,7 +18,7 @@ st.markdown("""
 
 # 2. 구글 시트 연결 설정
 # 시트 주소 예시: https://docs.google.com/spreadsheets/d/시트ID/edit
-SHEET_URL = https://docs.google.com/spreadsheets/d/1CQtgnJKueyfaJs3rUrbtPc8pOCGRtPq9a6BX1Nsok3Y/edit?gid=0#gid=0
+SHEET_URL = https://docs.google.com/spreadsheets/d/1CQtgnJKueyfaJs3rUrbtPc8pOCGRtPq9a6BX1Nsok3Y/edit
 conn = st.connection("gsheets", type=GSheetsConnection)
 
 # 3. 사이드바 구성 (로그인 및 관리자)
@@ -90,3 +90,4 @@ if is_admin:
     st.header("📊 관리자 전체 데이터 확인")
     admin_df = conn.read(spreadsheet=SHEET_URL)
     st.dataframe(admin_df, use_container_width=True)
+
